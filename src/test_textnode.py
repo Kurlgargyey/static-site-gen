@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
+from htmlnode import LeafNode
 
 class TestTextNode(unittest.TestCase):
 	def test_eq(self):
@@ -39,6 +40,37 @@ class TestTextNode(unittest.TestCase):
 	def test_repr(self):
 		node = TextNode("This is a text node", TextType.LINK)
 		self.assertEqual(f"{node}", "TextNode(This is a text node, link, None)")
+
+	def test_text_to_html(self):
+		node = TextNode("This is a text node", TextType.NORMAL)
+		html_expected = LeafNode(value=node.text)
+		self.assertEqual(node.text_node_to_html_node(), html_expected)
+	def test_bold_to_html(self):
+		node = TextNode("This is a text node", TextType.BOLD)
+		html_expected = LeafNode(value=node.text, tag = "b")
+		self.assertEqual(node.text_node_to_html_node(), html_expected)
+	def test_ital_to_html(self):
+		node = TextNode("This is a text node", TextType.ITALIC)
+		html_expected = LeafNode(value=node.text, tag="i")
+		self.assertEqual(node.text_node_to_html_node(), html_expected)
+	def test_code_to_html(self):
+		node = TextNode("This is a text node", TextType.CODE)
+		html_expected = LeafNode(value=node.text, tag="code")
+		self.assertEqual(node.text_node_to_html_node(), html_expected)
+	def test_link_to_html(self):
+		node = TextNode("This is a text node", TextType.LINK, url="url.url.com")
+		html_expected = LeafNode(value=node.text, tag="a", props={"href":node.url})
+		self.assertEqual(node.text_node_to_html_node(), html_expected)
+	def test_img_to_html(self):
+		node = TextNode("This is a text node", TextType.IMG, url="img.url.com")
+		html_expected = LeafNode(value="", tag="img", props={"src": node.url, "alt": node.text})
+		self.assertEqual(node.text_node_to_html_node(), html_expected)
+	def test_links_require_url(self):
+		node = TextNode("This is a text node", TextType.LINK)
+		self.assertRaises
+	def test_images_require_url(self):
+		node = TextNode("This is a text node", TextType.IMG)
+		self.assertRaises
 
 if __name__ == "__main__":
 	unittest.main()
