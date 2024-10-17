@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, split_nodes_delimiter
 from htmlnode import LeafNode
 
 class TestTextNode(unittest.TestCase):
@@ -67,10 +67,29 @@ class TestTextNode(unittest.TestCase):
 		self.assertEqual(node.text_node_to_html_node(), html_expected)
 	def test_links_require_url(self):
 		node = TextNode("This is a text node", TextType.LINK)
-		self.assertRaises
+		with self.assertRaises(ValueError):
+			node.text_node_to_html_node()
+
 	def test_images_require_url(self):
 		node = TextNode("This is a text node", TextType.IMG)
-		self.assertRaises
+		with self.assertRaises(ValueError):
+			node.text_node_to_html_node()
+
+	def test_basic_split(self):
+		node = TextNode("This is a *text* node", TextType.NORMAL)
+		splits = split_nodes_delimiter([node], "*", TextType.ITALIC)
+		self.assertEqual(splits, [TextNode("This is a ", TextType.NORMAL), TextNode("text", TextType.ITALIC), TextNode(" node", TextType.NORMAL)])
+
+	def test_raise_on_delim_mismatch(self):
+		node = TextNode("This is a *text* node", TextType.NORMAL)
+		with self.assertRaises(ValueError):
+			split_nodes_delimiter([node], "**", TextType.ITALIC)
+
+	def test_raise_on_odd_delim_count(self):
+		node = TextNode("This is a *text** node", TextType.NORMAL)
+		with self.assertRaises(Exception):
+			split_nodes_delimiter([node], "*", TextType.ITALIC)
+
 
 if __name__ == "__main__":
 	unittest.main()

@@ -61,3 +61,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 			continue
 		split = node.text.split(delimiter)
 		type_cycle = cycle([TextType.NORMAL, text_type])
+		def map_leaf(text):
+			return TextNode(content=text, type=next(type_cycle))
+		nodes.extend(map(map_leaf, split))
+	return nodes

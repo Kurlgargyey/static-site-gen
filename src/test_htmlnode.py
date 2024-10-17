@@ -28,7 +28,8 @@ class TestHTMLNode(unittest.TestCase):
 
 	def test_leaf_needs_value(self):
 		test_leaf = LeafNode(value= None)
-		self.assertRaises(ValueError)
+		with self.assertRaises(ValueError):
+			test_leaf.to_html()
 
 	def test_parent_rejects_value(self):
 		test_leaf = LeafNode("a", "A link", [], {"href": "lololol", "target":"_blank"})
@@ -38,12 +39,14 @@ class TestHTMLNode(unittest.TestCase):
 	def test_parent_needs_children_len(self):
 		test_leaf = LeafNode("a", "A link", [], {"href": "lololol", "target":"_blank"})
 		test_parent = ParentNode("p", value="blabla", children=[])
-		self.assertRaises
+		with self.assertRaises(ValueError):
+			test_parent.to_html()
 
 	def test_parent_needs_children_some(self):
 		test_leaf = LeafNode("a", "A link", [], {"href": "lololol", "target":"_blank"})
 		test_parent = ParentNode("p", value="blabla")
-		self.assertRaises
+		with self.assertRaises(ValueError):
+			test_parent.to_html()
 
 	def test_parent_to_html(self):
 		test_leaf = LeafNode("a", "A link", [], {"href": "lololol", "target":"_blank"})
