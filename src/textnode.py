@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 from itertools import cycle
 from htmlnode import LeafNode, ParentNode
@@ -65,3 +66,15 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 			return TextNode(content=text, type=next(type_cycle))
 		nodes.extend(map(map_leaf, split))
 	return nodes
+
+def extract_regex(regex, text):
+	matches = regex.findall(text)
+	result = []
+	result.extend(map(lambda match: (match[0], match[1]),matches))
+	return result
+def extract_markdown_images(text):
+	regex = re.compile(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)")
+	return extract_regex(regex, text)
+def extract_markdown_links(text):
+	regex = re.compile(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)")
+	return extract_regex(regex, text)

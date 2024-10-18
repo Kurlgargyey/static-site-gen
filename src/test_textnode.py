@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_delimiter
+from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 from htmlnode import LeafNode
 
 class TestTextNode(unittest.TestCase):
@@ -90,6 +90,15 @@ class TestTextNode(unittest.TestCase):
 		with self.assertRaises(Exception):
 			split_nodes_delimiter([node], "*", TextType.ITALIC)
 
+	def test_extract_image(self):
+		node = TextNode("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.NORMAL)
+		images = extract_markdown_images(node.text)
+		self.assertEqual(images, [('rick roll', 'https://i.imgur.com/aKaOqIh.gif'),('obi wan', 'https://i.imgur.com/fJRm4Vk.jpeg')])
+
+	def text_extract_link(self):
+		node = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", TextType.NORMAL)
+		links = extract_markdown_images(node.text)
+		self.assertEqual(links, [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")])
 
 if __name__ == "__main__":
 	unittest.main()
