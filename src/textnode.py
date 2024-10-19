@@ -72,9 +72,36 @@ def extract_regex(regex, text):
 	result = []
 	result.extend(map(lambda match: (match[0], match[1]),matches))
 	return result
+IMAGE_REGEX = re.compile(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)")
 def extract_markdown_images(text):
-	regex = re.compile(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)")
-	return extract_regex(regex, text)
+	return extract_regex(IMAGE_REGEX, text)
+LINK_REGEX = re.compile(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)")
 def extract_markdown_links(text):
-	regex = re.compile(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)")
-	return extract_regex(regex, text)
+	return extract_regex(LINK_REGEX, text)
+
+def split_nodes_regex(old_nodes, regex):
+	nodes = []
+	for node in old_nodes:
+		if TextType(node.type) != TextType.NORMAL:
+			nodes.append(node)
+			continue
+		images = extract_markdown_images(node.text)
+		split = re.split(regex, node.text)
+		image_nodes = map(lambda image: TextNode(content=image[0], type= TextNode.IMG, url=image[1]), images)
+		text_nodes = map(lambda text: TextNode(content=text, type=TextNode.NORMAL), split)
+		result = image_nodes + text_nodes
+		match regex.match(node.text):
+			case None:
+				result[::2] = text_nodes
+				result[1::2] = image_nodes
+				nodes.extend(result)
+			case _:
+				result[::2] = image_nodes
+				result[1::2] = text_nodes
+				nodes.extend(result)
+
+	return nodes
+def split_nodes_images(old_nodes):
+	return split_nodes_regex(old_nodes, IMAGE_REGEX)
+def split_nodes_links(old_nodes):
+	return split_nodes_regex(old_nodes, LINK_REGEX)
