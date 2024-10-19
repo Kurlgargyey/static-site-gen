@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
+from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_images, split_nodes_links
 from htmlnode import LeafNode
 
 class TestTextNode(unittest.TestCase):
@@ -95,10 +95,31 @@ class TestTextNode(unittest.TestCase):
 		images = extract_markdown_images(node.text)
 		self.assertEqual(images, [('rick roll', 'https://i.imgur.com/aKaOqIh.gif'),('obi wan', 'https://i.imgur.com/fJRm4Vk.jpeg')])
 
-	def text_extract_link(self):
+	def test_extract_images_does_not_extract_links(self):
 		node = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", TextType.NORMAL)
 		links = extract_markdown_images(node.text)
+		self.assertNotEqual(links, [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")])
+
+
+	def test_extract_link(self):
+		node = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", TextType.NORMAL)
+		links = extract_markdown_links(node.text)
 		self.assertEqual(links, [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")])
+
+	def test_extract_link_does_not_extract_images(self):
+		node = TextNode("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.NORMAL)
+		images = extract_markdown_links(node.text)
+		self.assertNotEqual(images, [('rick roll', 'https://i.imgur.com/aKaOqIh.gif'),('obi wan', 'https://i.imgur.com/fJRm4Vk.jpeg')])
+
+	def test_split_images(self):
+		old_nodes = [TextNode("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.NORMAL)]
+		new_nodes = split_nodes_images(old_nodes)
+		self.assertEqual(new_nodes, [
+			TextNode("This is text with a ", TextType.NORMAL, None),
+  			TextNode("rick roll", TextType.IMG, "https://i.imgur.com/aKaOqIh.gif"),
+  			TextNode(" and ", TextType.NORMAL, None),
+  			TextNode("obi wan", TextType.IMG, "https://i.imgur.com/fJRm4Vk.jpeg")
+  			])
 
 if __name__ == "__main__":
 	unittest.main()
