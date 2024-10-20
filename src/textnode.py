@@ -81,24 +81,25 @@ def extract_markdown_links(text):
 
 def split_nodes_regex(old_nodes, regex):
 	delim = "<-split->"
+	type = (lambda regex: TextType.IMG if regex == IMAGE_REGEX else TextType.LINK)(regex)
 	nodes = []
 	for node in old_nodes:
 		if TextType(node.type) != TextType.NORMAL:
 			nodes.append(node)
 			continue
-		images = extract_markdown_images(node.text)
+		ressources = extract_regex(regex, node.text)
 		splitter_text = re.sub(regex, delim, node.text)
 		split = re.split(delim, splitter_text)
-		image_nodes = list(map(lambda image: TextNode(content=image[0], type= TextType.IMG, url=image[1]), images))
+		ressource_nodes = list(map(lambda image: TextNode(content=image[0], type= type, url=image[1]), ressources))
 		text_nodes = list(map(lambda text: TextNode(content=text, type=TextType.NORMAL), filter(None,split)))
-		result = image_nodes + text_nodes
+		result = ressource_nodes + text_nodes
 		match regex.match(node.text):
 			case None:
 				result[::2] = text_nodes
-				result[1::2] = image_nodes
+				result[1::2] = ressource_nodes
 				nodes.extend(result)
 			case _:
-				result[::2] = image_nodes
+				result[::2] = ressource_nodes
 				result[1::2] = text_nodes
 				nodes.extend(result)
 
@@ -107,3 +108,12 @@ def split_nodes_images(old_nodes):
 	return split_nodes_regex(old_nodes, IMAGE_REGEX)
 def split_nodes_links(old_nodes):
 	return split_nodes_regex(old_nodes, LINK_REGEX)
+
+def text_to_text_nodes(text):
+	old_nodes = [TextNode(content=text, type=TextType.NORMAL)]
+	bold_nodes = split_nodes_delimiter(old_nodes, delimiter="**", text_type=TextType.BOLD)
+	italic_nodes = split_nodes_delimiter(bold_nodes, delimiter="*", text_type=TextType.ITALIC)
+	code_nodes = split_nodes_delimiter(italic_nodes, delimiter="`", text_type=TextType.CODE)
+	img_nodes = split_nodes_images(code_nodes)
+	link_nodes = split_nodes_links(img_nodes)
+	return link_nodes

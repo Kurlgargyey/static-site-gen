@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_images, split_nodes_links
+from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_images, split_nodes_links, text_to_text_nodes
 from htmlnode import LeafNode
 
 class TestTextNode(unittest.TestCase):
@@ -120,6 +120,29 @@ class TestTextNode(unittest.TestCase):
   			TextNode(" and ", TextType.NORMAL, None),
   			TextNode("obi wan", TextType.IMG, "https://i.imgur.com/fJRm4Vk.jpeg")
   			])
+	def test_split_links(self):
+		old_nodes = [TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", TextType.NORMAL)]
+		new_nodes = split_nodes_links(old_nodes)
+		self.assertEqual(new_nodes, [
+			TextNode("This is text with a link ", TextType.NORMAL, None),
+  			TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+  			TextNode(" and ", TextType.NORMAL, None),
+  			TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev")
+  			])
+
+	def test_text_to_textnodes(self):
+		text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+		nodes = text_to_text_nodes(text)
+		self.assertEqual(nodes, [TextNode("This is ", TextType.NORMAL, None),
+  TextNode("text", TextType.BOLD, None),
+  TextNode(" with an ", TextType.NORMAL, None),
+  TextNode("italic", TextType.ITALIC, None),
+  TextNode(" word and a ", TextType.NORMAL, None),
+  TextNode("code block", TextType.CODE, None),
+  TextNode(" and an ", TextType.NORMAL, None),
+  TextNode("obi wan image", TextType.IMG, "https://i.imgur.com/fJRm4Vk.jpeg"),
+  TextNode(" and a ", TextType.NORMAL, None),
+  TextNode("link", TextType.LINK, "https://boot.dev")])
 
 if __name__ == "__main__":
 	unittest.main()
