@@ -1,5 +1,7 @@
 import re
 
+from htmlnode import HTMLNode
+
 def markdown_to_blocks(markdown):
 	return list(
 			filter(lambda block: not len(block)==0,
@@ -20,3 +22,12 @@ def block_to_blocktype(block):
 			return "ordered_list"
 		case _:
 			return "paragraph"
+
+def markdown_to_html_node(markdown):
+	blocks = markdown_to_blocks(markdown)
+	root = HTMLNode(tag="div")
+	for block in blocks:
+		match block_to_blocktype(block):
+			case "heading":
+				tag = "h"
+				HTMLNode(tag, value=block.lstrip("# "))
