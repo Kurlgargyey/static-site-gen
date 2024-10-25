@@ -8,4 +8,5 @@ def block_to_blocktype(block):
 	match block:
 		case heading if heading[0:2] == "# ":
 			return "heading"
-		
+		case _:
+			return "paragraph"

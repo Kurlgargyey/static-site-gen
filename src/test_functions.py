@@ -31,15 +31,14 @@ class TestFunctions(unittest.TestCase):
 			"* This is the first list item in a list block\n* This is a list item\n* This is another list item"
 		])
 	def test_blocktypes(self):
-		heading = "# This is a heading"
-		code = "```This is code```"
-		quote = ">This\n>is\n>a\n>multiline\n>quote"
-		ul = "*These\n-are\n*items\n*in\n-an unordered list"
-		li = "1. This is a list\n2. With two items"
-		p = "This is just an ordinary paragraph"
-		self.assertEqual(block_to_blocktype(heading), "heading")
-		self.assertEqual(block_to_blocktype(code), "code")
-		self.assertEqual(block_to_blocktype(quote), "quote")
-		self.assertEqual(block_to_blocktype(ul), "unordered_list")
-		self.assertEqual(block_to_blocktype(li), "ordered_list")
-		self.assertEqual(block_to_blocktype(p), "paragraph")
+		cases = {
+		"heading": "# This is a heading",
+		"code": "```This is code```",
+		"quote": ">This\n>is\n>a\n>multiline\n>quote",
+		"unordered_list": "*These\n-are\n*items\n*in\n-an unordered list",
+		"ordered_list": "1. This is a list\n2. With two items",
+		"paragraph": "This is just an ordinary paragraph"
+		}
+		for case in cases.items():
+			with self.subTest(block=case[1], type=case[0]):
+				self.assertEqual(block_to_blocktype(case[1]), case[0])
