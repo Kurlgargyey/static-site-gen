@@ -1,3 +1,5 @@
+import re
+
 def markdown_to_blocks(markdown):
 	return list(
 			filter(lambda block: not len(block)==0,
@@ -14,5 +16,7 @@ def block_to_blocktype(block):
 			return "quote"
 		case ul if all(line[:2]=="- " or line[:2]=="* " for line in ul.split("\n")):
 			return "unordered_list"
+		case li if all(re.match(r"(\d+)\. .*", line) for line in li.split("\n")):
+			return "ordered_list"
 		case _:
 			return "paragraph"
