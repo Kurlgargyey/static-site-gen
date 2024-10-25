@@ -30,3 +30,16 @@ class TestFunctions(unittest.TestCase):
 			"This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
 			"* This is the first list item in a list block\n* This is a list item\n* This is another list item"
 		])
+	def test_blocktypes(self):
+		heading = "# This is a heading"
+		code = "```This is code```"
+		quote = ">This\n>is\n>a\n>multiline\n>quote"
+		ul = "*These\n-are\n*items\n*in\n-an unordered list"
+		li = "1. This is a list\n2. With two items"
+		p = "This is just an ordinary paragraph"
+		self.assertEqual(block_to_blocktype(heading), "heading")
+		self.assertEqual(block_to_blocktype(code), "code")
+		self.assertEqual(block_to_blocktype(quote), "quote")
+		self.assertEqual(block_to_blocktype(ul), "unordered_list")
+		self.assertEqual(block_to_blocktype(li), "ordered_list")
+		self.assertEqual(block_to_blocktype(p), "paragraph")
