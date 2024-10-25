@@ -35,7 +35,7 @@ class TestFunctions(unittest.TestCase):
 		"heading": "# This is a heading",
 		"code": "```This is code```",
 		"quote": ">This\n>is\n>a\n>multiline\n>quote",
-		"unordered_list": "*These\n-are\n*items\n*in\n-an unordered list",
+		"unordered_list": "* These\n- are\n* items\n* in\n- an unordered list",
 		"ordered_list": "1. This is a list\n2. With two items",
 		"paragraph": "This is just an ordinary paragraph"
 		}
