@@ -10,7 +10,7 @@ def markdown_to_blocks(markdown):
 
 def block_to_blocktype(block):
 	match block:
-		case heading if heading[:2] == "# ":
+		case heading if re.match(r"#+ ", heading):
 			return "heading"
 		case code if code[:3] == "```" and code[-3:] == "```":
 			return "code"
@@ -30,4 +30,5 @@ def markdown_to_html_node(markdown):
 		match block_to_blocktype(block):
 			case "heading":
 				tag = "h"
-				HTMLNode(tag, value=block.lstrip("# "))
+				text = block.lstrip("# ")
+				root.children.append(HTMLNode(tag, value = text))
