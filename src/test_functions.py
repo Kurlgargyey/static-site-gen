@@ -33,6 +33,7 @@ class TestFunctions(unittest.TestCase):
 	def test_blocktypes(self):
 		cases = {
 		"heading": "# This is a heading",
+		"heading": "### This is also a heading",
 		"code": "```This is code```",
 		"quote": ">This\n>is\n>a\n>multiline\n>quote",
 		"unordered_list": "* These\n- are\n* items\n* in\n- an unordered list",
