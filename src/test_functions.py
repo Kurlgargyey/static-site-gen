@@ -43,3 +43,37 @@ class TestFunctions(unittest.TestCase):
 		for case in cases.items():
 			with self.subTest(block=case[1], type=case[0]):
 				self.assertEqual(block_to_blocktype(case[1]), case[0])
+
+	def test_multiple_newlines(self):
+		markdown = "# Heading\n\n\nParagraph"
+		blocks = markdown_to_blocks(markdown)
+		self.assertEqual(blocks, [
+			"# Heading",
+			"Paragraph"
+		])
+
+	def test_preserve_internal_newlines(self):
+		markdown = "# Heading\n\n* Item 1\n* Item 2\n* Item 3"
+		blocks = markdown_to_blocks(markdown)
+		self.assertEqual(blocks, [
+			"# Heading",
+			"* Item 1\n* Item 2\n* Item 3"
+		])
+
+	def test_empty_string(self):
+		markdown = ""
+		blocks = markdown_to_blocks(markdown)
+		self.assertEqual(blocks, [])
+
+	def test_only_whitespace(self):
+		markdown = "    \n\n   \n"
+		blocks = markdown_to_blocks(markdown)
+		self.assertEqual(blocks, [])
+
+	def test_trailing_newlines(self):
+		markdown = "# Heading\n\nParagraph\n\n\n"
+		blocks = markdown_to_blocks(markdown)
+		self.assertEqual(blocks, [
+			"# Heading",
+			"Paragraph"
+		])
