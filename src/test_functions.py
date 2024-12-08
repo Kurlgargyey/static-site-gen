@@ -77,3 +77,38 @@ class TestFunctions(unittest.TestCase):
 			"# Heading",
 			"Paragraph"
 		])
+
+
+class TestMarkdownConversion(unittest.TestCase):
+
+    def test_single_heading(self):
+        markdown = "# Heading 1"
+        node = markdown_to_html_node(markdown)
+        self.assertEqual(node.children[0].tag, "h1")
+        self.assertEqual(node.children[0].children[0].value, "Heading 1")
+
+    def test_multiple_headings(self):
+        markdown = "## Heading 2\n### Heading 3"
+        node = markdown_to_html_node(markdown)
+        self.assertEqual(node.children[0].tag, "h2")
+        self.assertEqual(node.children[0].children[0].value, "Heading 2")
+        self.assertEqual(node.children[1].tag, "h3")
+        self.assertEqual(node.children[1].children[0].value, "Heading 3")
+
+    def test_single_line_code_block(self):
+        markdown = "```\nprint('Hello')\n```"
+        node = markdown_to_html_node(markdown)
+        self.assertEqual(node.children[0].tag, "pre")
+        self.assertEqual(node.children[0].children[0].tag, "code")
+        self.assertEqual(node.children[0].children[0].children[0].value, "print('Hello')")
+
+    def test_multi_line_code_block(self):
+        markdown = "```\ndef foo():\n    return 'bar'\n```"
+        node = markdown_to_html_node(markdown)
+        self.assertEqual(node.children[0].tag, "pre")
+        self.assertEqual(node.children[0].children[0].tag, "code")
+        self.assertEqual(node.children[0].children[0].children[0].value, "def foo():\n    return 'bar'")
+
+
+if __name__ == "__main__":
+    unittest.main()
