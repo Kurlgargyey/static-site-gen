@@ -150,9 +150,45 @@ class TestMarkdownConversion(unittest.TestCase):
 		self.assertEqual(html_node.children[0].tag, "ul")
 
 		self.assertEqual(len(html_node.children[0].children), 3)  # Three list items
-		self.assertEqual(html_node.children[0].children[0].children[0].text, "")  # First item is empty
-		self.assertEqual(html_node.children[0].children[1].children[0].text, "Second item")  # Second item has text
-		self.assertEqual(html_node.children[0].children[2].children[0].text, "")  # Third item is empty
+		self.assertEqual(html_node.children[0].children[0].children[0].value, "")  # First item is empty
+		self.assertEqual(html_node.children[0].children[1].children[0].value, "Second item")  # Second item has text
+		self.assertEqual(html_node.children[0].children[2].children[0].value, "")  # Third item is empty
+
+	def test_basic_paragraph(self):
+		markdown = "This is a simple paragraph."
+
+		html_node = markdown_to_html_node(markdown)
+
+		self.assertEqual(len(html_node.children), 1)  # One parent div node
+		self.assertEqual(html_node.children[0].tag, "p")  # Paragraph tag
+		self.assertEqual(html_node.children[0].children[0].value, "This is a simple paragraph.")
+
+	def test_empty_paragraph(self):
+		markdown = ""
+
+		html_node = markdown_to_html_node(markdown)
+
+		self.assertEqual(len(html_node.children), 0)  # No children as there's no content
+
+	def test_multiple_consecutive_paragraphs(self):
+		markdown = "First paragraph.\n\nSecond paragraph.\n\nThird paragraph."
+
+		html_node = markdown_to_html_node(markdown)
+
+		self.assertEqual(len(html_node.children), 3)  # Three paragraph nodes
+		self.assertEqual(html_node.children[0].tag, "p")
+		self.assertEqual(html_node.children[0].children[0].value, "First paragraph.")
+		self.assertEqual(html_node.children[1].children[0].value, "Second paragraph.")
+		self.assertEqual(html_node.children[2].children[0].value, "Third paragraph.")
+
+	def test_paragraph_with_line_breaks(self):
+		markdown = "This is a paragraph\nwith a line break."
+
+		html_node = markdown_to_html_node(markdown)
+
+		self.assertEqual(len(html_node.children), 1)  # One paragraph despite the line break
+		self.assertEqual(html_node.children[0].tag, "p")
+		self.assertEqual(html_node.children[0].children[0].value, "This is a paragraph\nwith a line break.")
 
 if __name__ == "__main__":
 	unittest.main()

@@ -56,7 +56,8 @@ def markdown_to_html_node(markdown):
 					list_node.children.append(HTMLNode("li", children=text_to_children(text)))
 				root.children.append(list_node)
 			case "paragraph":
-				continue
+				tag = "p"
+				root.children.append(HTMLNode("p", children=text_to_children(block)))
 	return root
 
 def text_to_children(markdown):
