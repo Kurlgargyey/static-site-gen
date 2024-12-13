@@ -141,6 +141,18 @@ class TestMarkdownConversion(unittest.TestCase):
 		self.assertEqual(html_node.children[0].children[1].children[0].value, "Second item")
 		self.assertEqual(html_node.children[0].children[2].children[0].value, "Third item")
 
+	def test_unordered_list_with_empty_items(self):
+		markdown = "- \n* Second item\n+ "
+
+		html_node = markdown_to_html_node(markdown)
+
+		self.assertEqual(len(html_node.children), 1)  # One parent UL node
+		self.assertEqual(html_node.children[0].tag, "ul")
+
+		self.assertEqual(len(html_node.children[0].children), 3)  # Three list items
+		self.assertEqual(html_node.children[0].children[0].children[0].text, "")  # First item is empty
+		self.assertEqual(html_node.children[0].children[1].children[0].text, "Second item")  # Second item has text
+		self.assertEqual(html_node.children[0].children[2].children[0].text, "")  # Third item is empty
 
 if __name__ == "__main__":
 	unittest.main()
