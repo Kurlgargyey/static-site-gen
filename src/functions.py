@@ -37,6 +37,7 @@ def markdown_to_html_node(markdown):
 			case "code":
 				tag = "code"
 				text = block.strip("```")
+				text = text.strip("\n")
 				root.children.append(HTMLNode("pre", children=[HTMLNode(tag, children=text_to_children(text))]))
 			case "quote":
 				tag = "quote"
