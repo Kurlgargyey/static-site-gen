@@ -46,13 +46,13 @@ def markdown_to_html_node(markdown):
 			case "unordered_list":
 				list_node = HTMLNode("ul", children= [])
 				for item in block.split("\n"):
-					text = map(lambda line: line.lstrip("*+- "), item)
+					text = re.sub(r"^(\*|\+|\-)\s*", "", item)
 					list_node.children.append(HTMLNode("li", children=text_to_children(text)))
 				root.children.append(list_node)
 			case "ordered_list":
 				list_node = HTMLNode("ol", children= [])
 				for item in block.split("\n"):
-					text = map(lambda line: line.lstrip("123456789. "), item)
+					text = re.sub(r"^\d+\.\s*", "", item)
 					list_node.children.append(HTMLNode("li", children=text_to_children(text)))
 				root.children.append(list_node)
 			case "paragraph":
