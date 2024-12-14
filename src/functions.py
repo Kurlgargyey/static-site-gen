@@ -1,7 +1,7 @@
 import re
 
-from htmlnode import HTMLNode, ParentNode
-from textnode import text_to_text_nodes, TextNode
+from htmlnode import HTMLNode
+from textnode import text_to_text_nodes, TextNode, TextType
 
 def markdown_to_blocks(markdown):
 	return list(
@@ -40,20 +40,24 @@ def markdown_to_html_node(markdown):
 				text = text.strip("\n")
 				root.children.append(HTMLNode("pre", children=[HTMLNode(tag, children=text_to_children(text))]))
 			case "quote":
-				tag = "quote"
+				tag = "blockquote"
 				text = map(lambda line: line.lstrip(">"), block.split("\n")).join()
 				root.children.append(HTMLNode(tag, children=text_to_children(text)))
 			case "unordered_list":
 				list_node = HTMLNode("ul", children= [])
 				for item in block.split("\n"):
 					text = re.sub(r"^(\*|\+|\-)\s*", "", item)
-					list_node.children.append(HTMLNode("li", children=text_to_children(text)))
+					item_node = HTMLNode("li", children=[])
+					item_node.children.append(HTMLNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
+					list_node.children.append(item_node)
 				root.children.append(list_node)
 			case "ordered_list":
 				list_node = HTMLNode("ol", children= [])
 				for item in block.split("\n"):
 					text = re.sub(r"^\d+\.\s*", "", item)
-					list_node.children.append(HTMLNode("li", children=text_to_children(text)))
+					item_node = HTMLNode("li", children=[])
+					item_node.children.append(HTMLNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
+					list_node.children.append(item_node)
 				root.children.append(list_node)
 			case "paragraph":
 				tag = "p"
