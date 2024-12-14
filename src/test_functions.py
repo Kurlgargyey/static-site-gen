@@ -88,12 +88,14 @@ class TestMarkdownConversion(unittest.TestCase):
 		self.assertEqual(node.children[0].children[0].value, "Heading 1")
 
 	def test_multiple_headings(self):
-		markdown = "## Heading 2\n### Heading 3"
+		markdown = "## Heading 2\n\n### Heading 3"
 		node = markdown_to_html_node(markdown)
 		self.assertEqual(node.children[0].tag, "h2")
 		self.assertEqual(node.children[0].children[0].value, "Heading 2")
 		self.assertEqual(node.children[1].tag, "h3")
 		self.assertEqual(node.children[1].children[0].value, "Heading 3")
+		self.assertEqual(node.tag, "div")
+		self.assertEqual(len(node.children), 2)
 
 	def test_single_line_code_block(self):
 		markdown = "```\nprint('Hello')\n```"

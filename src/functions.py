@@ -17,9 +17,9 @@ def block_to_blocktype(block):
 			return "code"
 		case quote if all(line[:1] == ">" for line in quote.split("\n")):
 			return "quote"
-		case ul if all(line[:2]=="- " or line[:2]=="* " for line in ul.split("\n")):
+		case ul if all(re.match(r"^(\*|\-|\+)\s*", line) for line in ul.split("\n")):
 			return "unordered_list"
-		case li if all(re.match(r"(\d+)\. .*", line) for line in li.split("\n")):
+		case li if all(re.match(r"^\d+\.\s*", line) for line in li.split("\n")):
 			return "ordered_list"
 		case _:
 			return "paragraph"
