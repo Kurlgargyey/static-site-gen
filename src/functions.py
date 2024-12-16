@@ -1,4 +1,6 @@
 import re
+import os
+import shutil
 
 from htmlnode import HTMLNode
 from textnode import text_to_text_nodes, TextNode, TextType
@@ -64,8 +66,21 @@ def markdown_to_html_node(markdown):
 				root.children.append(HTMLNode("p", children=text_to_children(block)))
 	return root
 
-def publish_static():
-	
+def publish_folder(source , dest):
+	if os.path.exists(dest):
+		shutil.rmtree(dest)
+	os.mkdir(dest)
+	if not os.path.isfile(source):
+		for path in os.listdir(source):
+			print(path, "\n")
+			if os.path.isfile(path):
+				shutil.copy(os.path.join(source, path), os.path.join(dest, path))
+			else:
+				publish_folder(os.path.join(source, path), os.path.join(dest, path))
+	else:
+		shutil.copy(source, dest)
+
+
 
 def text_to_children(markdown):
 	text_nodes = text_to_text_nodes(markdown)
