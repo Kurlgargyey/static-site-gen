@@ -64,7 +64,8 @@ def markdown_to_html_node(markdown):
 				root.children.append(HTMLNode("p", children=text_to_children(block)))
 	return root
 
-
+def publish_static():
+	
 
 def text_to_children(markdown):
 	text_nodes = text_to_text_nodes(markdown)
