@@ -40,25 +40,23 @@ def markdown_to_html_node(markdown):
 				tag = "code"
 				text = block.strip("```")
 				text = text.strip("\n")
-				root.children.append(ParentNode("pre", children=[ParentNode(tag, children=text_to_children(text))]))
+				root.children.append(ParentNode("pre", children=[ParentNode(tag, children= text_to_children(text))]))
 			case "quote":
 				tag = "blockquote"
-				text = " ".join(list(map(lambda line: line.lstrip(">"), block.split("\n"))))
-				root.children.append(ParentNode(tag, children=text_to_children(text)))
+				text = " ".join(list(map(lambda line: line.lstrip("> "), block.split("\n"))))
+				root.children.append(ParentNode(tag, children= text_to_children(text)))
 			case "unordered_list":
 				list_node = ParentNode("ul", children= [])
 				for item in block.split("\n"):
 					text = re.sub(r"^(\*|\+|\-)\s+", "", item)
-					item_node = ParentNode("li", children=[])
-					item_node.children.append(ParentNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
+					item_node = ParentNode("li", children= text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()])
 					list_node.children.append(item_node)
 				root.children.append(list_node)
 			case "ordered_list":
 				list_node = ParentNode("ol", children= [])
 				for item in block.split("\n"):
 					text = re.sub(r"^\d+\.\s+", "", item)
-					item_node = ParentNode("li", children=[])
-					item_node.children.append(ParentNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
+					item_node = ParentNode("li", children= text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()])
 					list_node.children.append(item_node)
 				root.children.append(list_node)
 			case "paragraph":
@@ -99,11 +97,11 @@ def generate_page(from_path, template_path, dest_path):
 			webpage = template.read()
 			html_data = markdown_to_html_node(source_markdown)
 			title = extract_title(source_markdown)
-			webpage.replace("{{ Title }}", title)
-			webpage.replace("{{ Content }}", html_data.to_html())
+			webpage = webpage.replace("{{ Title }}", title)
+			webpage = webpage.replace("{{ Content }}", html_data.to_html())
 
 			if not os.path.exists(os.path.dirname(from_path)):
 				os.mkdir(os.path.dirname(from_path))
 
-			with open(dest_path) as dest:
+			with open(dest_path, "w") as dest:
 				dest.write(webpage)

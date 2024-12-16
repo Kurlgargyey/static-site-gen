@@ -119,8 +119,8 @@ class TestMarkdownConversion(unittest.TestCase):
 		self.assertEqual(len(html_node.children), 1)
 		self.assertEqual(html_node.children[0].tag, "ol")
 		self.assertEqual(len(html_node.children[0].children), 2)
-		self.assertEqual(html_node.children[0].children[0].children[0].children[0].value, "")
-		self.assertEqual(html_node.children[0].children[1].children[0].children[0].value, "")
+		self.assertEqual(html_node.children[0].children[0].children[0].value, "")
+		self.assertEqual(html_node.children[0].children[1].children[0].value, "")
 
 	def test_non_sequential_ordered_list(self):
 		markdown = "3. Item three\n5. Item five"
@@ -129,8 +129,8 @@ class TestMarkdownConversion(unittest.TestCase):
 
 		self.assertEqual(len(html_node.children), 1)
 		self.assertEqual(html_node.children[0].tag, "ol")
-		self.assertEqual(html_node.children[0].children[0].children[0].children[0].value, "Item three")
-		self.assertEqual(html_node.children[0].children[1].children[0].children[0].value, "Item five")
+		self.assertEqual(html_node.children[0].children[0].children[0].value, "Item three")
+		self.assertEqual(html_node.children[0].children[1].children[0].value, "Item five")
 
 	def test_mixed_symbols_unordered_list(self):
 		markdown = "- First item\n* Second item\n+ Third item"
@@ -139,9 +139,9 @@ class TestMarkdownConversion(unittest.TestCase):
 
 		self.assertEqual(len(html_node.children), 1)
 		self.assertEqual(html_node.children[0].tag, "ul")
-		self.assertEqual(html_node.children[0].children[0].children[0].children[0].value, "First item")
-		self.assertEqual(html_node.children[0].children[1].children[0].children[0].value, "Second item")
-		self.assertEqual(html_node.children[0].children[2].children[0].children[0].value, "Third item")
+		self.assertEqual(html_node.children[0].children[0].children[0].value, "First item")
+		self.assertEqual(html_node.children[0].children[1].children[0].value, "Second item")
+		self.assertEqual(html_node.children[0].children[2].children[0].value, "Third item")
 
 	def test_unordered_list_with_empty_items(self):
 		markdown = "- \n* Second item\n+ "
@@ -152,9 +152,9 @@ class TestMarkdownConversion(unittest.TestCase):
 		self.assertEqual(html_node.children[0].tag, "ul")
 
 		self.assertEqual(len(html_node.children[0].children), 3)  # Three list items
-		self.assertEqual(html_node.children[0].children[0].children[0].children[0].value, "")  # First item is empty
-		self.assertEqual(html_node.children[0].children[1].children[0].children[0].value, "Second item")  # Second item has text
-		self.assertEqual(html_node.children[0].children[2].children[0].children[0].value, "")  # Third item is empty
+		self.assertEqual(html_node.children[0].children[0].children[0].value, "")  # First item is empty
+		self.assertEqual(html_node.children[0].children[1].children[0].value, "Second item")  # Second item has text
+		self.assertEqual(html_node.children[0].children[2].children[0].value, "")  # Third item is empty
 
 	def test_basic_paragraph(self):
 		markdown = "This is a simple paragraph."
