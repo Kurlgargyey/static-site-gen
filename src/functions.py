@@ -2,7 +2,7 @@ import re
 import os
 import shutil
 
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, ParentNode
 from textnode import text_to_text_nodes, TextNode, TextType
 
 def markdown_to_blocks(markdown):
@@ -19,51 +19,51 @@ def block_to_blocktype(block):
 			return "code"
 		case quote if all(line[:1] == ">" for line in quote.split("\n")):
 			return "quote"
-		case ul if all(re.match(r"^(\*|\-|\+)\s*", line) for line in ul.split("\n")):
+		case ul if all(re.match(r"^(\*|\-|\+)\s+", line) for line in ul.split("\n")):
 			return "unordered_list"
-		case li if all(re.match(r"^\d+\.\s*", line) for line in li.split("\n")):
+		case li if all(re.match(r"^\d+\.\s+", line) for line in li.split("\n")):
 			return "ordered_list"
 		case _:
 			return "paragraph"
 
 def markdown_to_html_node(markdown):
 	blocks = markdown_to_blocks(markdown)
-	root = HTMLNode(tag="div", children=[])
+	root = ParentNode(tag="div", children=[])
 	for block in blocks:
 		match block_to_blocktype(block):
 			case "heading":
 				level = len(block) - len(block.lstrip("#"))
 				text = block.lstrip("#")
 				text = text.lstrip(" ")
-				root.children.append(HTMLNode(f"h{level}", children = text_to_children(text)))
+				root.children.append(ParentNode(f"h{level}", children = text_to_children(text)))
 			case "code":
 				tag = "code"
 				text = block.strip("```")
 				text = text.strip("\n")
-				root.children.append(HTMLNode("pre", children=[HTMLNode(tag, children=text_to_children(text))]))
+				root.children.append(ParentNode("pre", children=[ParentNode(tag, children=text_to_children(text))]))
 			case "quote":
 				tag = "blockquote"
-				text = map(lambda line: line.lstrip(">"), block.split("\n")).join()
-				root.children.append(HTMLNode(tag, children=text_to_children(text)))
+				text = " ".join(list(map(lambda line: line.lstrip(">"), block.split("\n"))))
+				root.children.append(ParentNode(tag, children=text_to_children(text)))
 			case "unordered_list":
-				list_node = HTMLNode("ul", children= [])
+				list_node = ParentNode("ul", children= [])
 				for item in block.split("\n"):
-					text = re.sub(r"^(\*|\+|\-)\s*", "", item)
-					item_node = HTMLNode("li", children=[])
-					item_node.children.append(HTMLNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
+					text = re.sub(r"^(\*|\+|\-)\s+", "", item)
+					item_node = ParentNode("li", children=[])
+					item_node.children.append(ParentNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
 					list_node.children.append(item_node)
 				root.children.append(list_node)
 			case "ordered_list":
-				list_node = HTMLNode("ol", children= [])
+				list_node = ParentNode("ol", children= [])
 				for item in block.split("\n"):
-					text = re.sub(r"^\d+\.\s*", "", item)
-					item_node = HTMLNode("li", children=[])
-					item_node.children.append(HTMLNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
+					text = re.sub(r"^\d+\.\s+", "", item)
+					item_node = ParentNode("li", children=[])
+					item_node.children.append(ParentNode("p", children=text_to_children(text) if text else [TextNode("", TextType.NORMAL, None).text_node_to_html_node()]))
 					list_node.children.append(item_node)
 				root.children.append(list_node)
 			case "paragraph":
 				tag = "p"
-				root.children.append(HTMLNode("p", children=text_to_children(block)))
+				root.children.append(ParentNode("p", children=text_to_children(block)))
 	return root
 
 def text_to_children(markdown):
@@ -88,8 +88,8 @@ def publish_folder(source , dest):
 
 def extract_title(markdown):
 	for block in markdown_to_blocks(markdown):
-		if re.match(r"^#\s*", block):
-			return re.sub(r"^#\s*", "", block)
+		if re.match(r"^#\s+", block):
+			return re.sub(r"^#\s+", "", block)
 
 def generate_page(from_path, template_path, dest_path):
 	print(f"Generating page from {from_path} to {dest_path} using {template_path}\n")
@@ -100,7 +100,7 @@ def generate_page(from_path, template_path, dest_path):
 			html_data = markdown_to_html_node(source_markdown)
 			title = extract_title(source_markdown)
 			webpage.replace("{{ Title }}", title)
-			webpage.replace("{{ Content }}", html_data)
+			webpage.replace("{{ Content }}", html_data.to_html())
 
 			if not os.path.exists(os.path.dirname(from_path)):
 				os.mkdir(os.path.dirname(from_path))
