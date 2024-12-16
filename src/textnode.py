@@ -56,7 +56,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 		raise ValueError("delimiter should match text type")
 	for node in old_nodes:
 		if node.text.count(delimiter)%2 != 0:
-			raise Exception("invalid markdown syntax")
+			raise Exception(f"invalid markdown syntax: {node}, {delimiter}s do not match")
 		if TextType(node.type) != TextType.NORMAL:
 			nodes.append(node)
 			continue
