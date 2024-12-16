@@ -192,5 +192,20 @@ class TestMarkdownConversion(unittest.TestCase):
 		self.assertEqual(html_node.children[0].tag, "p")
 		self.assertEqual(html_node.children[0].children[0].value, "This is a paragraph\nwith a line break.")
 
+class TestHeaderExtraction(unittest.TestCase):
+	def test_standard_case(self):
+		markdown = "# This is a heading"
+
+		heading = extract_title(markdown)
+
+		self.assertEqual(heading, "This is a heading")
+
+	def test_multiple_headings(self):
+		markdown = "# This is a heading\n\n# This, too is a heading"
+
+		heading = extract_title(markdown)
+
+		self.assertEqual(heading, "This is a heading")
+
 if __name__ == "__main__":
 	unittest.main()

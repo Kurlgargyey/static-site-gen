@@ -66,13 +66,19 @@ def markdown_to_html_node(markdown):
 				root.children.append(HTMLNode("p", children=text_to_children(block)))
 	return root
 
+def text_to_children(markdown):
+	text_nodes = text_to_text_nodes(markdown)
+	children = []
+	for node in text_nodes:
+		children.append(node.text_node_to_html_node())
+	return children
+
 def publish_folder(source , dest):
 	if os.path.exists(dest):
 		shutil.rmtree(dest)
 	os.mkdir(dest)
 	if not os.path.isfile(source):
 		for path in os.listdir(source):
-			print(path, "\n")
 			if os.path.isfile(path):
 				shutil.copy(os.path.join(source, path), os.path.join(dest, path))
 			else:
@@ -80,11 +86,24 @@ def publish_folder(source , dest):
 	else:
 		shutil.copy(source, dest)
 
+def extract_title(markdown):
+	for block in markdown_to_blocks(markdown):
+		if re.match(r"^#\s*", block):
+			return re.sub(r"^#\s*", "", block)
 
+def generate_page(from_path, template_path, dest_path):
+	print(f"Generating page from {from_path} to {dest_path} using {template_path}\n")
+	with open(from_path) as source:
+		source_markdown = source.read()
+		with open(template_path) as template:
+			webpage = template.read()
+			html_data = markdown_to_html_node(source_markdown)
+			title = extract_title(source_markdown)
+			webpage.replace("{{ Title }}", title)
+			webpage.replace("{{ Content }}", html_data)
 
-def text_to_children(markdown):
-	text_nodes = text_to_text_nodes(markdown)
-	children = []
-	for node in text_nodes:
-		children.append(node.text_node_to_html_node())
-	return children
+			if not os.path.exists(os.path.dirname(from_path)):
+				os.mkdir(os.path.dirname(from_path))
+
+			with open(dest_path) as dest:
+				dest.write(webpage)
