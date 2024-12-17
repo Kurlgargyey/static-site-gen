@@ -77,7 +77,7 @@ def publish_folder(source , dest):
 	os.mkdir(dest)
 	if not os.path.isfile(source):
 		for path in os.listdir(source):
-			if os.path.isfile(path):
+			if os.path.isfile(os.path.join(source, path)):
 				shutil.copy(os.path.join(source, path), os.path.join(dest, path))
 			else:
 				publish_folder(os.path.join(source, path), os.path.join(dest, path))
@@ -102,6 +102,15 @@ def generate_page(from_path, template_path, dest_path):
 
 			if not os.path.exists(os.path.dirname(from_path)):
 				os.mkdir(os.path.dirname(from_path))
-
+			if not os.path.exists(os.path.dirname(dest_path)):
+				os.mkdir(os.path.dirname(dest_path))
 			with open(dest_path, "w") as dest:
 				dest.write(webpage)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+	if not os.path.isfile(dir_path_content):
+		for path in os.listdir(dir_path_content):
+			if os.path.isfile(os.path.join(dir_path_content, path)):
+				generate_page(os.path.join(dir_path_content, path), template_path, os.path.join(dest_dir_path, os.path.basename(path).rstrip(".md")+".html"))
+			else:
+				generate_pages_recursive(os.path.join(dir_path_content, path), template_path, os.path.join(dest_dir_path, path))
